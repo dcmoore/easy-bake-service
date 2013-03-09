@@ -5,8 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [speclj "2.5.0"]
-                 [metis "0.3.0"]]
+                 [org.clojure/data.json "0.2.1"]]
   :profiles {:dev {:dependencies [[speclj "2.5.0"]]}}
   :test-paths ["spec/"]
-  :plugins [[speclj "2.5.0"]]
-  :main easy-bake-service.core)
+  :plugins [[speclj "2.5.0"]])
