@@ -16,24 +16,32 @@
   (with test-request {:headers {"content-type" "application/json"}
                       :body    "{\"someKey\":\"some value\"}"})
 
-  (it "won't alter the request unless the content-type is set to application/json"
-    (let [request {:body "{\"someKey\":\"some value\"}"}]
-      (should= request (modified-request request))))
+  (context "altering the request"
+    (it "won't alter the request unless the content-type is set to application/json"
+      (let [request {:body "{\"someKey\":\"some value\"}" :headers {}}]
+        (should= request (modified-request request))))
 
-  (it "turns camel cased json into dasherized clojure data"
-    (should=
-      {:some-key "some value"}
-      (request-body @test-request)))
+    (it "turns camel cased json into dasherized clojure data"
+      (should=
+        {:some-key "some value"}
+        (request-body @test-request)))
 
-  (it "really turns camel cased json into dasherized clojure data"
-    (should=
-      {:fa-real "dawg"}
-      (request-body (assoc @test-request :body "{\"faReal\":\"dawg\"}"))))
+    (it "really turns camel cased json into dasherized clojure data"
+      (should=
+        {:fa-real "dawg"}
+        (request-body (assoc @test-request :body "{\"faReal\":\"dawg\"}"))))
 
-  (it "returns a 400 bad request if there are spaces in the json string keys"
-    (should=
-      400
-      (:status (modified-request (assoc @test-request :body "{\"fa real\":\"dawg\"}"))))))
+    (it "returns a 400 bad request if there are spaces in the json string keys"
+      (should=
+        400
+        (:status (modified-request (assoc @test-request :body "{\"fa real\":\"dawg\"}")))))
+
+    (it "handles nested json structures"
+      (should=
+        {:this {:is {:some "json"}}}
+        (request-body (assoc @test-request :body "{\"this\":{\"is\":{\"some\":\"json\"}}}"))))))
+
+
 
 
 (run-specs)

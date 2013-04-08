@@ -8,7 +8,9 @@
 
 (defn- keyify [json-data]
   (into {} (for [[k v] json-data]
-    [(dasherize k) v])))
+    (if (map? v)
+      [(dasherize k) (keyify v)]
+      [(dasherize k) v]))))
 
 (defn- any-keys-with-spaces? [json-data]
   (not (empty?
@@ -19,7 +21,12 @@
     "You can't have any spaces in your JSON keys"))
 
 (defn- contains-json? [request]
-  (= "application/json" (get (:headers request) "content-type")))
+  (re-find
+    #"application/json"
+    (.toLowerCase
+      (or
+        (get (:headers request) "content-type")
+        ""))))
 
 (defn wrap-json [handler]
   (fn [request]
