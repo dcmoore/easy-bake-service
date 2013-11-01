@@ -3,6 +3,7 @@
     [speclj.core]
     [easy-bake-service.middleware.normalize]))
 
+
 (defn- modified-request [test-request]
   ((wrap-normalize identity) test-request))
 
@@ -52,6 +53,13 @@
                        :body (java.io.StringReader. "{\"json_key\":\"json value\"}")}]
           (should=
             {:json-key "json value"}
+            (:body (modified-request request)))))
+
+      (it "normalizes nested keys"
+        (let [request {:content-type "application/json"
+                       :body (java.io.StringReader. "{\"top_level_key\":{\"nested_key\":\"value\"}}")}]
+          (should=
+            {:top-level-key {:nested-key "value"}}
             (:body (modified-request request)))))))
 
   (context "response"
@@ -62,6 +70,14 @@
                         :headers {"Content-Type" "application/json"}}]
           (should=
             "{\"jsonKey\":\"json value\"}"
+            (:body (modified-response response)))))
+
+      (it "works for nested keys too"
+        (let [response {:status 200
+                        :body {:json-key {:nested-key "nested value"}}
+                        :headers {"Content-Type" "application/json"}}]
+          (should=
+            "{\"jsonKey\":{\"nestedKey\":\"nested value\"}}"
             (:body (modified-response response))))))
 
     (context "doesn't alter the request"
@@ -80,5 +96,6 @@
           (should=
             "{:json-key \"json value\"}"
             (:body (modified-response response))))))))
+
 
 (run-specs)

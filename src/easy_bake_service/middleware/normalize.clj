@@ -1,13 +1,15 @@
 (ns easy-bake-service.middleware.normalize
   (:require
     [camel-snake-kebab :refer [->kebab-case ->camelCase]]
-    [ring.util.codec :refer [form-decode]]
+    [ring.util.codec   :refer [form-decode]]
     [clojure.data.json :refer [read-str write-str]]))
 
 (defn- normalize-hash [hash-to-normalize case-transformer]
-  (into {}
-    (for [[k v] hash-to-normalize]
-      [(keyword (case-transformer k)) v])))
+  (let [normalize-pair (fn [[k v]] [(keyword (case-transformer k)) v])]
+    (clojure.walk/postwalk (fn [x] (if (map? x)
+                                     (into {} (map normalize-pair x))
+                                     x))
+                           hash-to-normalize)))
 
 (defn- normalize-body [request]
   (if (= "application/json" (:content-type request))
@@ -26,7 +28,6 @@
     (assoc response :body (write-str (normalize-hash (:body response) ->camelCase)))
     response))
 
-
 (defn wrap-normalize [handler]
   (fn [request]
     (let [normalized-query-params (normalize-hash
@@ -35,4 +36,3 @@
           normalized-body (normalize-body request)
           modified-request (assoc request :query-params normalized-query-params :body normalized-body)]
       (modified-response (handler modified-request)))))
-
