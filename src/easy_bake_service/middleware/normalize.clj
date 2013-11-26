@@ -16,7 +16,8 @@
     (normalize-hash
       (read-str (slurp
         (or (:body request) (java.io.StringReader. ""))))
-      ->kebab-case)))
+      ->kebab-case)
+    (:body request)))
 
 (defn- query-string [request]
   (form-decode (or (:query-string request) "") "utf-8"))

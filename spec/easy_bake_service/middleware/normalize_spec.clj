@@ -60,6 +60,13 @@
                        :body (java.io.StringReader. "{\"top_level_key\":{\"nested_key\":\"value\"}}")}]
           (should=
             {:top-level-key {:nested-key "value"}}
+            (:body (modified-request request)))))
+
+      (it "doesn't touch the body if the content-type isn't 'application/json'"
+        (let [request {:content-type "something/else"
+                       :body (java.io.StringReader. "{\"top_level_key\":{\"nested_key\":\"value\"}}")}]
+          (should=
+            (:body request)
             (:body (modified-request request)))))))
 
   (context "response"
