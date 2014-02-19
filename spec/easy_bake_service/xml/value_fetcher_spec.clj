@@ -1,7 +1,7 @@
-(ns easy-bake-service.utilities.hiccup-spec
+(ns easy-bake-service.xml.value-fetcher-spec
   (:require
-    [easy-bake-service.utilities.hiccup :refer :all]
-    [speclj.core                        :refer :all]))
+    [easy-bake-service.xml.value-fetcher :refer :all]
+    [speclj.core                         :refer :all]))
 
 (def hiccup [:key {}
               [:nesting {}

@@ -63,11 +63,18 @@
               [:some {:attr "data"} [:nested {} "value"] [:other {:nested "value"}]]
               (:body (modified-request request)))))
 
-        (it "normalizes keys to kebab case"
+        (xit "normalizes keys to kebab case"
           (let [request {:content-type "application/xml"
                          :body (java.io.StringReader. "<someXml attr_xml=\"data\"></someXml>")}]
             (should=
               [:some-xml {:attr-xml "data"}]
+              (:body (modified-request request)))))
+
+        (xit "normalizes nested keys to kebab case"
+          (let [request {:content-type "application/xml"
+                         :body (java.io.StringReader. "<someXml attr_xml=\"data\"><nestedXml>value</nestedXml></someXml>")}]
+            (should=
+              [:some-xml {:attr-xml "data"} [:nested-xml {} "value"]]
               (:body (modified-request request))))))
 
       (context "JSON"
@@ -140,7 +147,14 @@
                         :headers {"Content-Type" "application/json"}}]
           (should=
             "{\"jsonKey\":{\"nestedKey\":\"nested value\"}}"
-            (:body (modified-response response))))))
+            (:body (modified-response response)))))
+
+      (xit "should throw an error if json couldn't be parsed"
+        (let [response {:status 200
+                        :body "not valid json"
+                        :headers {"Content-Type" "application/json"}}]
+          (should-throw Exception "Invalid JSON in response body"
+            (modified-response response)))))
 
     (context "doesn't alter the request"
       (it "when the Content-Type is anything other than application/json"

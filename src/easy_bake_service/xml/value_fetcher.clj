@@ -1,9 +1,14 @@
-(ns easy-bake-service.utilities.hiccup)
+(ns easy-bake-service.xml.value-fetcher)
 
-(defn- key-extractor [hiccup-node]
+(defn tag-extractor [hiccup-node]
   (first hiccup-node))
 
-(defn- body-extractor [hiccup-node]
+(defn attr-extractor [hiccup-node]
+  (if (map? (second hiccup-node))
+    (second hiccup-node)
+    {}))
+
+(defn body-extractor [hiccup-node]
   (if (map? (second hiccup-node))
     (rest (rest hiccup-node))
     (rest hiccup-node)))
@@ -12,7 +17,7 @@
   (apply concat (map body-extractor hiccup-nodes)))
 
 (defn- filter-nodes-on-key [hiccup-nodes key-to-filter-on]
-  (filter #(= key-to-filter-on (key-extractor %)) hiccup-nodes))
+  (filter #(= key-to-filter-on (tag-extractor %)) hiccup-nodes))
 
 (defn get-hiccup-nodes [hiccup key-path]
   (loop [hiccup-nodes [hiccup]
