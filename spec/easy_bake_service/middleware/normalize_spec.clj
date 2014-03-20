@@ -63,14 +63,14 @@
               [:some {:attr "data"} [:nested {} "value"] [:other {:nested "value"}]]
               (:body (modified-request request)))))
 
-        (xit "normalizes keys to kebab case"
+        (it "normalizes keys to kebab case"
           (let [request {:content-type "application/xml"
                          :body (java.io.StringReader. "<someXml attr_xml=\"data\"></someXml>")}]
             (should=
               [:some-xml {:attr-xml "data"}]
               (:body (modified-request request)))))
 
-        (xit "normalizes nested keys to kebab case"
+        (it "normalizes nested keys to kebab case"
           (let [request {:content-type "application/xml"
                          :body (java.io.StringReader. "<someXml attr_xml=\"data\"><nestedXml>value</nestedXml></someXml>")}]
             (should=

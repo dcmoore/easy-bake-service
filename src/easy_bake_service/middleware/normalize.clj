@@ -18,13 +18,19 @@
         %)
       hash-to-normalize)))
 
+(defn- normalize-vector [vector-to-normalize case-transformer]
+   (walk/postwalk
+     #(if(keyword? %)(case-transformer %) %) vector-to-normalize))
+
 (defn- normalize-body [request]
   (let [request-body (slurp (or (:body request) (java.io.StringReader. "")))]
     (case (:content-type request)
       "application/json" (normalize-hash
                            (json-str->clj-map request-body)
                            csk/->kebab-case)
-      "application/xml" (xml-str->hiccup request-body)
+      "application/xml" (normalize-vector
+                           (xml-str->hiccup request-body)
+                           csk/->kebab-case)
       (:body request))))
 
 (defn- modified-response [response]
