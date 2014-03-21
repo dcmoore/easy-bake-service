@@ -26,7 +26,7 @@
     (string/join " " (map format-node-body (:content node)))))
 
 (defn- build-xml-element-tree [hiccup]
-  (if (vector? (last hiccup))
+  (if (coll? (last hiccup))
     (xml/element (first hiccup) (second hiccup) (map #(build-xml-element-tree %) (drop 2 hiccup)))
     (xml/element (first hiccup) (second hiccup) (last hiccup))))
 
