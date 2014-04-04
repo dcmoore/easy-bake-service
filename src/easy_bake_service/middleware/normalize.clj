@@ -20,15 +20,14 @@
       hash-to-normalize)))
 
 (defn- normalize-vector [node case-transformer]
-   (concat [(case-transformer (tag-extractor node))]
-     (map (fn [nested-node]
-        (if (vector? nested-node)
-          (normalize-vector nested-node case-transformer)
-          nested-node))
-            (rest node))))
-
-(defn- convert-to-vector [collection]
-      (walk/prewalk #(if (coll? %) (apply vector %) %) collection))
+  (apply vector
+    (concat [(case-transformer (tag-extractor node))]
+      (map
+        (fn [nested-node]
+          (if (vector? nested-node)
+            (normalize-vector nested-node case-transformer)
+            nested-node))
+          (rest node)))))
 
 (defn- normalize-body [request]
   (let [request-body (slurp (or (:body request) (java.io.StringReader. "")))]
@@ -44,8 +43,7 @@
 (defn- modified-response [response]
   (case (get (:headers response) "Content-Type")
     "application/json" (assoc response :body (clj-map->json-str (normalize-hash (:body response) csk/->camelCase)))
-    "application/xml" (assoc response :body (hiccup->xml-str
-        (convert-to-vector (normalize-vector (:body response) csk/->kebab-case))))
+    "application/xml" (assoc response :body (hiccup->xml-str (normalize-vector (:body response) csk/->kebab-case)))
     response))
 
 (defn wrap-normalize [handler]
