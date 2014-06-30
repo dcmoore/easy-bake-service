@@ -30,15 +30,17 @@
           (rest node)))))
 
 (defn- normalize-body [request]
-  (let [request-body (slurp (or (:body request) (java.io.StringReader. "")))]
-    (case (:content-type request)
-      "application/json" (normalize-hash
-                           (json-str->clj-map request-body)
-                           csk/->kebab-case)
-      "application/xml" (normalize-vector
-                           (xml-str->hiccup request-body)
-                           csk/->kebab-case)
-      (:body request))))
+  (let [request-body (slurp (or (:body request) (java.io.StringReader. "")))
+        content-type (or (:content-type request) "")]
+    (if (re-matches #".*application/json.*" content-type)
+      (normalize-hash
+        (json-str->clj-map request-body)
+        csk/->kebab-case)
+      (if (re-matches #".*application/xml.*" content-type)
+        (normalize-vector
+          (xml-str->hiccup request-body)
+          csk/->kebab-case)
+        (:body request)))))
 
 (defn- modified-response [response]
   (case (get (:headers response) "Content-Type")

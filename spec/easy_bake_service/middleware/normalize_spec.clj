@@ -49,6 +49,13 @@
               (:body request)
               (:body (modified-request request)))))
 
+        (it "normalizes if 'application/xml' is a part of the content-type"
+          (let [request {:content-type "application/xml; charset=utf-8"
+                         :body (java.io.StringReader. "<some attr=\"data\">thing</some>")}]
+            (should=
+              [:some {:attr "data"} "thing"]
+              (:body (modified-request request)))))
+
         (it "converts XML data into hiccup"
           (let [request {:content-type "application/xml"
                          :body (java.io.StringReader. "<some attr=\"data\">thing</some>")}]
@@ -83,6 +90,13 @@
                          :body (java.io.StringReader. "{\"top_level_key\":{\"nested_key\":\"value\"}}")}]
             (should=
               (:body request)
+              (:body (modified-request request)))))
+
+        (it "normalizes if 'application/json' is a part of the content-type"
+          (let [request {:content-type "application/json; charset=utf-8"
+                         :body (java.io.StringReader. "{\"top_level_key\":{\"nested_key\":\"value\"}}")}]
+            (should=
+              {:top-level-key {:nested-key "value"}}
               (:body (modified-request request)))))
 
         (it "normalizes camelCase keys"
