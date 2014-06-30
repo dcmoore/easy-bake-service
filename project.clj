@@ -1,4 +1,4 @@
-(defproject easy-bake-service "0.0.6"
+(defproject easy-bake-service "0.0.7"
   :description "A simple framework that makes it easy to serve data"
   :url "https://github.com/dcmoore/easy-bake-service"
   :license {:name "Eclipse Public License"
