@@ -1,7 +1,7 @@
 (ns easy-bake-service.xml.parser
   (:require
     [clojure.data.xml  :as xml]
-    [camel-snake-kebab :as csk]
+    [camel-snake-kebab.core :as csk]
     [clojure.string    :as string]))
 
 (defn- format-attributes [attributes]
