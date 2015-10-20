@@ -3,7 +3,7 @@
     [easy-bake-service.json.parser       :refer [clj-map->json-str json-str->clj-map]]
     [easy-bake-service.xml.parser        :refer [hiccup->xml-str xml-str->hiccup]]
     [easy-bake-service.xml.value-fetcher :refer [tag-extractor]]
-    [camel-snake-kebab                   :as csk]
+    [camel-snake-kebab.core                   :as csk]
     [clojure.walk                        :as walk]
     [ring.util.codec                     :as ring]))
 
