@@ -51,7 +51,7 @@ With the server up, we should be able to run the following curl commands:
 
 ```bash
 $: curl localhost:4321/json
-=> {:sup-dude "not much bro"}
+=> {"supDude":"not much bro"}
 
 $: curl localhost:4321/xml
 => <?xml version="1.0" encoding="UTF-8"?><sup dude="not">much bro</sup>
