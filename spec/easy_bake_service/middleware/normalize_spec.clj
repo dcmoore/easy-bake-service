@@ -10,7 +10,6 @@
 (defn- modified-response [test-response]
   ((wrap-normalize (fn [_] test-response)) {}))
 
-
 (describe "Normalize Middleware"
   (context "request"
     (context "query-params"
@@ -163,12 +162,14 @@
             "{\"jsonKey\":{\"nestedKey\":\"nested value\"}}"
             (:body (modified-response response)))))
 
-      (xit "should throw an error if json couldn't be parsed"
+      (it "should throw an error if json couldn't be parsed"
         (let [response {:status 200
                         :body "not valid json"
                         :headers {"Content-Type" "application/json"}}]
+          (with-redefs [easy-bake-service.json.parser/valid-json-format (fn [_] false)]
           (should-throw Exception "Invalid JSON in response body"
-            (modified-response response)))))
+            (modified-response response))))))
+
 
     (context "doesn't alter the request"
       (it "when the Content-Type is anything other than application/json"
@@ -186,6 +187,5 @@
           (should=
             "{:json-key \"json value\"}"
             (:body (modified-response response))))))))
-
 
 (run-specs)

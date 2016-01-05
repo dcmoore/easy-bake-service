@@ -6,3 +6,6 @@
 
 (defn clj-map->json-str [clj-map]
  (json/write-str clj-map))
+
+(defn valid-json-format [clj-map]
+  (or (map? clj-map) (coll? clj-map)))

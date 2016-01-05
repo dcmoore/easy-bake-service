@@ -1,6 +1,6 @@
 (ns easy-bake-service.middleware.normalize
   (:require
-    [easy-bake-service.json.parser       :refer [clj-map->json-str json-str->clj-map]]
+    [easy-bake-service.json.parser       :refer [clj-map->json-str json-str->clj-map valid-json-format]]
     [easy-bake-service.xml.parser        :refer [hiccup->xml-str xml-str->hiccup]]
     [easy-bake-service.xml.value-fetcher :refer [tag-extractor]]
     [camel-snake-kebab.core                   :as csk]
@@ -42,10 +42,19 @@
           csk/->kebab-case)
         (:body request)))))
 
+(defn json-write [response]
+    (let [body (normalize-hash (:body response) csk/->camelCase)]
+    (if (valid-json-format body)
+    (assoc response :body (clj-map->json-str body))
+    (throw (Exception. "Invalid JSON in response body")))))
+
+(defn xml-write [response]
+  (assoc response :body (hiccup->xml-str (normalize-vector (:body response) csk/->kebab-case))))
+
 (defn- modified-response [response]
   (case (get (:headers response) "Content-Type")
-    "application/json" (assoc response :body (clj-map->json-str (normalize-hash (:body response) csk/->camelCase)))
-    "application/xml" (assoc response :body (hiccup->xml-str (normalize-vector (:body response) csk/->kebab-case)))
+    "application/json" (json-write response)
+    "application/xml" (xml-write response)
     response))
 
 (defn wrap-normalize [handler]
