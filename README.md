@@ -15,32 +15,32 @@ The goal of this library is to abstract away the following tasks:
 The below code example is an example application that showcases how Easy Bake Service can normalize incoming and outgoing requests/responses. Leaving the app free of xml and json parsing concerns.
 
 ```clojure
-1 : (ns example-app.core
-2 :   (:require [compojure.core :refer [defroutes GET POST]]
-3 :             [easy-bake-service.middleware.normalize :refer [wrap-normalize]]
-4 :             [ring.adapter.jetty :refer [run-jetty]]))
-5 :
-6 : (defn- xml-response [body]
-7 :   {:status 200
-8 :    :headers {"Content-Type" "application/xml"}
-9 :    :body body})
-10:
-11: (defn- json-response [body]
-12:   {:status 200
-13:    :headers {"Content-Type" "application/json"}
-14:    :body body})
-15:
-16: (defroutes handler
-17:   (GET "/xml" [] (xml-response [:sup {:dude "not"} "much bro"]))
-18:   (GET "/json" [] (json-response {:sup-dude "not much bro"}))
-19:   (POST "/echo" request (str (:body request))))
-20:
-21: (def app
-22:   (-> handler
-23:       wrap-normalize))
-24:
-25: (defn -main []
-26:   (run-jetty app {:port 4321}))
+(ns example-app.core
+  (:require [compojure.core :refer [defroutes GET POST]]
+            [easy-bake-service.middleware.normalize :refer [wrap-normalize]]
+            [ring.adapter.jetty :refer [run-jetty]]))
+
+(defn- xml-response [body]
+  {:status 200
+   :headers {"Content-Type" "application/xml"}
+   :body body})
+
+(defn- json-response [body]
+  {:status 200
+   :headers {"Content-Type" "application/json"}
+   :body body})
+
+(defroutes handler
+  (GET "/xml" [] (xml-response [:sup {:dude "not"} "much bro"]))
+  (GET "/json" [] (json-response {:sup-dude "not much bro"}))
+  (POST "/echo" request (str (:body request))))
+
+(def app
+  (-> handler
+      wrap-normalize))
+
+(defn -main []
+  (run-jetty app {:port 4321}))
 ```
 
 Assuming your project.clj file has all the dependencies listed it needs you should be able to boot this service.
@@ -51,7 +51,7 @@ With the server up, we should be able to run the following curl commands:
 
 ```bash
 $: curl localhost:4321/json
-=> {:sup-dude "not much bro"}
+=> {"supDude":"not much bro"}
 
 $: curl localhost:4321/xml
 => <?xml version="1.0" encoding="UTF-8"?><sup dude="not">much bro</sup>
